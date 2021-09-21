@@ -1,0 +1,62 @@
+---
+title: "Lab 2: Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##### **Name:** Muhammad Khairi Norizan **Date:** September 20th 2021
+
+
+```{r, echo=FALSE}
+library(ggplot2)
+library(dplyr)
+library(classdata)
+data(choco)
+```
+
+### First Analysis
+
+From the graph below, we can see that most of the dark chocolate bars has about 70%-75% cocoa. Dark chocolate bars with less or equal than 50% cocoa were the least produced. 
+
+```{r, echo=FALSE}
+ggplot(choco, aes(x = CocoaPercent)) + geom_histogram(binwidth=5)
+```
+
+Looking at the graph below, in terms of ratings range, dark chocolate bars with cocoa percent group of 7 have the biggest ratings range which between 1.0 to 4.0. On the other hand,  dark chocolate bars with cocoa percent group of 4 has the smallest range. In fact, dark chocolate bars with cocoa percent group of 4 has a median rating of about 2.75. 
+
+Moreover, from the same graph below, we see that dark chocolate bars with a percent group of  6,7, and 8 have the highest rating. However, if we take a look at the median rating between 6,7, and 8 cocoa percent group, dark chocolate bars with cocoa percent group 6 and 7 have about 3.25 rating which is the highest median rating, while, dark chocolate bars with cocoa percent group 8 has median rating of 3.0.
+
+```{r, echo=FALSE}
+choco$PercentGroup <- floor(choco$CocoaPercent / 10)
+boxplot(Rating~PercentGroup,data=choco)
+```
+
+From the two graphs above, we can imply that, most of the chocolate bars in the world are produces with 70%-75% cocoa (or cocoa percent group 7) and dark chocolate bars with less or equal than 50% cocoa are the least produced.
+
+However, from the statement above, we cannot imply that most people rate dark chocolate bars with 70% the best. The box plot from the above shows that dark chocolate bars with 70% cocoa have variety of ratings. As aforementioned, the lowest rate for dark chocolate bars with 70% cocoa is 1.0, while the highest is 4.0.Hence, we cannot imply that dark chocolate bars with 70% cocoa is the favorite.
+
+## Second Analysis
+
+The graph below shows us the top 10 Bean Origin in terms of the rating. As illustrated in the graph below, dark chocolate bars with bean origin from Venezuela has the highest rating followed by Peru, Dominican Republic, Ecuador, Madagascar, Blend, Nicaragua, Bolivia, Brazil, and Columbia. 
+
+```{r, echo=FALSE}
+
+country_filtered <- table(choco$CountryBeanOrigin) %>% sort(decreasing = TRUE) %>% head(10)
+
+barplot(country_filtered, las = 2, cex.names = 0.5) 
+
+```
+
+Below is the summary for the relationship between the top 10 Country Bean Origin and its Rating. The average  for dark chocolate bars that have Venezuela's bean origin is 3.226. However, this does not imply that Venezuela's bean origin has the best rating though, the graph above shows that Venezuela's bean origin has the most ratings. The summary below shows that, dark chocolate bars with Madagascar's bean origin has the best average rating (3.265), while Brazil's bean origin is a close second (3.263).
+
+```{r, echo=FALSE}
+
+newSet <- choco %>% filter(CountryBeanOrigin %in% names(country_filtered)) 
+
+tapply(newSet$Rating, newSet$CountryBeanOrigin, summary)
+```
+
+Therefore, the graph and the summary, we can say that Venezuela's bean origin has the most rating, however, Madagascar and Brazil's bean origin has the best average rating. Hence, dark chocolate bars with Madagascar or Brazil's bean origin can almost not fail your expectations. \
