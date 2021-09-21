@@ -1,0 +1,73 @@
+---
+title: "DS202 Lab2: Muhammad Khairi Norizan"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Reading in the data
+
+```{r}
+library(ggplot2)
+library(classdata)
+data(choco)
+str(choco)
+```
+
+## Searching for the Best Chocolates
+
+We will be exploring what aspects of the chocolates may affect taste. Before setting off to the exploration, answer the following questions.
+
+1. How are the cocoa percent distributed? Create both a histogram and a boxplot and describe them. Don't forget to mentioned outliers, if there are any.
+
+```{r, echo=FALSE}
+ggplot(choco, aes(x = CocoaPercent)) + geom_histogram(binwidth=5)
+```
+
+```{r, echo=FALSE}
+ggplot(choco, aes(y = CocoaPercent)) + geom_boxplot()
+```
+
+```{r}
+summary(as.numeric(choco$CocoaPercent))
+```
+
+2. How does the number of ratings depend on the country of bean origin? Draw a bar chart of the number of ratings by bean origin. **[Hint: If your graph is too dense and the labels are not legible, show fewer bean origins.]**
+
+```{r, echo=FALSE}
+
+country_filtered <- table(choco$CountryBeanOrigin) %>% sort(decreasing = TRUE) %>% head(10)
+
+barplot(country_filtered, las = 2, cex.names = 0.5) 
+
+```
+
+3. Do ratings depend on the cocoa percentage of a chocolate bar? Create both numerical and graphical summaries, and explain. [Hint: Think about why the scatter plot is not a very good choice for visualization here]
+```{r}
+
+choco$PercentGroup <- floor(choco$CocoaPercent / 10)
+
+boxplot(Rating~PercentGroup,data=choco)
+
+```
+
+4. How do different bean origin compare in terms of the flavor of chocolates? Are bean from some places better than the other? Create both numerical and graphical summaries, and explain.
+
+```{r}
+# Get the flavor and the number of each flavor 
+flavor <- table(choco$Characteristics1)
+# Filter only flavor that are more than 50
+filteredFlavor <- flavor[flavor > 50]
+choco_filtered <- filter(choco, Characteristics1 %in% names(filteredFlavor))
+
+# Filter top 10 countries in the dataset
+country_filtered <- table(choco$CountryBeanOrigin) %>% sort(decreasing = TRUE) %>% head(10)
+
+choco %>% filter(Characteristics1 %in% names(filteredFlavor)) %>% filter(CountryBeanOrigin %in% names(country_filtered)) %>% ggplot() + geom_bar(aes(x = CountryBeanOrigin, fill = Characteristics1), position = 'fill') + coord_flip()
+
+# Are beans from some paces better than the other?
+tapply(choco$Rating, choco$CountryBeanOrigin, summary) %>%
+  head(5)
+```
+
